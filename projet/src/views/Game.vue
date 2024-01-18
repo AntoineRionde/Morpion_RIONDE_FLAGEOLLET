@@ -29,8 +29,10 @@ export default {
       if (this.game.state === 2) {
         return;
       }
-
-      let response = await axiosInstance.get(`/api/game/${to.params.id}`, {
+      // recupérer le paramètre id de l'URL
+      let params = this.$route.params;
+      let id = parseInt(params.id);
+      let response = await axiosInstance.get(`/api/game/${id}`, {
         params: {
           since: this.game.last_time_updated
         }

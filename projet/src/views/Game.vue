@@ -1,42 +1,65 @@
-<script>
+<template>
+  <textarea v-model="game.owner.name">Nom du joueur 1</textarea>
+  <textarea v-if="opponent" v-model="opponent.name">J2 : </textarea>
+  <textarea v-model="game.code">Code de la partie</textarea>
+</template>
 
-import api from "../api";
+<script>
+import axiosInstance from "../api";
 export default {
+  name: "GameVue",
   data() {
     return {
-      game: null,
-      intervalId: null,
+      game: {}
     };
   },
-  methods: {
-    beforeRouteEnter(to, from, next) {
-      api.get("api/games/:" + to.params.id).then((response) => {
-        next((vm) => {
-          vm.game = response.data;
-        }, 1000);
+  computed: {
+    opponent() {
+      if (this.game.opponent) {
+        // afficher la grille de jeu
+        return this.game.opponent;
+      } else {
+        return "En attente d'un adversaire";
+      }
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    axiosInstance.get(`/api/games/${to.params.id}`).then(response => {
+      console.log(response.data);
+      next(vm => {
+        vm.game.owner.name = response.data.owner.name;
+        vm.game.code = response.data.code;
+        vm.game.opponent = response.data.opponent;
+        vm.game.state = response.data.state;
+        vm.game.last_time_updated = response.data.last_time_updated;
       });
-    },
-    waitForOpponentMove() {
-      api.get("api/games/:" + this.game.id).then((response) => {
-        this.game = response.data;
-        if (this.game.state === 2) {
-          this.intervalId = setTimeout(this.waitForOpponentMove, 1000);
+    });
+
+    (async function waitForOpponentMove() {
+      // Si la partie est terminée, il n'y a pas de raison de rafraîchir
+      if (this.game.state === 2) {
+        return;
+      }
+
+      let response = await axiosInstance.get(`/api/game/${to.params.id}`, {
+        params: {
+          since: this.game.last_time_updated
         }
       });
-    },
-  },
-};
+
+      this.game = response.data;
+
+      // Si la partie n'est pas encore terminée, attendez un nouveau tour
+      if (this.game.state !== 2) {
+        await waitForOpponentMove();
+      }
+    })();
+
+  }
+
+}
 </script>
 
-<template>
-  <div>
-    <div v-if="game">
-      <h1>{{ game.owner }} vs {{ game.opponent.name }}</h1>
-      <p>Code de la partie : {{ game.code }}</p>
-      <button v-if="!game.opponent" @click="waitForOpponent">En attente d'un adversaire</button>
-    </div>
-    <div v-else>
-      <p>Chargement en cours...</p>
-    </div>
-  </div>
-</template>
+<style scoped>
+
+</style>

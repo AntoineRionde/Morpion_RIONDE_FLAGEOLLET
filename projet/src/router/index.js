@@ -15,11 +15,15 @@ const router = createRouter({
         component: () => import('../views/ProfileView.vue')
     },
     {
-        path: '/game',
-        name: 'game',
-        component: () => import('../views/Game.vue')
+            path: '/games/:id',
+            name: 'game',
+            component: () => import('../views/Game.vue')
+    },
+    {
+        path: '/join',
+        name: 'join',
+        component: () => import('../views/JoinView.vue')
     }
-
   ]
 })
 

@@ -20,7 +20,6 @@ export default {
     };
   },
   beforeRouteEnter(to, from, next) {
-    // faire appel à l'API pour récupérer les données de l'utilisateur
     axiosInstance.get(`/api/profile`).then(response => {
       console.log(response.data.name);
       next (vm => {

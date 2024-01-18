@@ -1,7 +1,26 @@
 <template>
-  <textarea v-model="game.owner.name">Nom du joueur 1</textarea>
-  <textarea v-if="opponent" v-model="opponent.name">J2 : </textarea>
-  <textarea v-model="game.code">Code de la partie</textarea>
+  <header>
+    <textarea v-model="game.owner.name">Nom du joueur 1</textarea>
+    <textarea v-if="opponent" v-model="opponent.name">J2 : </textarea>
+    <textarea v-model="game.code">Code de la partie</textarea>
+  </header>
+
+    <div class="morpion">
+      <section @click="play"> </section>
+      <section @click="play">  </section>
+      <section @click="play">  </section>
+      <section @click="play">  </section>
+      <section @click="play">  </section>
+      <section @click="play">  </section>
+      <section @click="play">  </section>
+      <section @click="play">  </section>
+      <section @click="play">  </section>
+    </div>
+
+   <footer>
+      <button> <a href="/">Revenir à l'accueil</a></button>
+  </footer>
+
 </template>
 
 <script>
@@ -16,7 +35,6 @@ export default {
   computed: {
     opponent() {
       if (this.game.opponent) {
-        // afficher la grille de jeu
         return this.game.opponent;
       } else {
         return "En attente d'un adversaire";
@@ -25,11 +43,9 @@ export default {
   },
   methods: {
     async waitForOpponentMove() {
-      // Si la partie est terminée, il n'y a pas de raison de rafraîchir
       if (this.game.state === 2) {
         return;
       }
-      // recupérer le paramètre id de l'URL
       let params = this.$route.params;
       let id = parseInt(params.id);
       let response = await axiosInstance.get(`/api/game/${id}`, {
@@ -39,16 +55,22 @@ export default {
       });
 
       this.game = response.data;
-
-      // Si la partie n'est pas encore terminée, attendez un nouveau tour
       if (this.game.state !== 2) {
         await this.waitForOpponentMove();
       }
+    },
+    play() {
+      let params = this.$route.params;
+      let id = params.id;
+      axiosInstance.patch(`/api/games/${id}/play/1/1`).then(response => {
+        console.log(response.data);
+      }).catch(error => {
+        console.log(error.response.data.errors);
+      });
     }
   },
   beforeRouteEnter(to, from, next) {
     axiosInstance.get(`/api/games/${to.params.id}`).then(response => {
-      console.log(response.data);
       next(vm => {
         vm.game.owner.name = response.data.owner.name;
         vm.game.code = response.data.code;
@@ -64,5 +86,27 @@ export default {
 </script>
 
 <style scoped>
+header {
+  background-color: #ccc;
+}
 
+footer {
+  background-color: #ddd;
+}
+
+.morpion {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 5px;
+  margin: 5% 20% 5% 20%;
+}
+section {
+  height: 200px;
+  width: 100%;
+}
+
+section {
+  border: 1px solid #ccc;
+}
 </style>

@@ -20,7 +20,6 @@ export default{
       axiosInstance.post(`/api/games`).then(response => {
         let id = response.data.id;
         this.$router.push({ path: `/games/${id}` });
-        // console.log(response);
       }).catch(error => {
         console.log(error);
       });

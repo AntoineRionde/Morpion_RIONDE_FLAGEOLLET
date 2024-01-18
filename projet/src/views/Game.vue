@@ -10,7 +10,7 @@ export default {
   name: "GameVue",
   data() {
     return {
-      game: {}
+      game: {owner: {}}
     };
   },
   computed: {
@@ -23,19 +23,8 @@ export default {
       }
     }
   },
-  beforeRouteEnter(to, from, next) {
-    axiosInstance.get(`/api/games/${to.params.id}`).then(response => {
-      console.log(response.data);
-      next(vm => {
-        vm.game.owner.name = response.data.owner.name;
-        vm.game.code = response.data.code;
-        vm.game.opponent = response.data.opponent;
-        vm.game.state = response.data.state;
-        vm.game.last_time_updated = response.data.last_time_updated;
-      });
-    });
-
-    (async function waitForOpponentMove() {
+  methods: {
+    async waitForOpponentMove() {
       // Si la partie est terminée, il n'y a pas de raison de rafraîchir
       if (this.game.state === 2) {
         return;
@@ -51,9 +40,21 @@ export default {
 
       // Si la partie n'est pas encore terminée, attendez un nouveau tour
       if (this.game.state !== 2) {
-        await waitForOpponentMove();
+        await this.waitForOpponentMove();
       }
-    })();
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    axiosInstance.get(`/api/games/${to.params.id}`).then(response => {
+      console.log(response.data);
+      next(vm => {
+        vm.game.owner.name = response.data.owner.name;
+        vm.game.code = response.data.code;
+        vm.game.opponent = response.data.opponent;
+        vm.game.state = response.data.state;
+        vm.game.last_time_updated = response.data.last_time_updated;
+      });
+    });
 
   }
 

@@ -1,8 +1,8 @@
 <template>
   <header>
-    <textarea v-model="game.owner.name">Nom du joueur 1</textarea>
-    <textarea v-if="opponent" v-model="opponent.name">J2 : </textarea>
-    <textarea v-model="game.code">Code de la partie</textarea>
+    <textarea v-model="game.owner.name"></textarea>
+    <textarea v-if="opponent" v-model="opponent.name"> </textarea>
+    <textarea v-model="game.code"></textarea>
   </header>
 
   <div class="morpion">
@@ -102,7 +102,7 @@ export default {
         this.makeGrid(1, row, col);
       }
 
-      this.game = response.data;
+      // this.game = response.data;
       if (this.game.state !== 2) {
         setTimeout (await this.waitForOpponentMove, 5000);
       }

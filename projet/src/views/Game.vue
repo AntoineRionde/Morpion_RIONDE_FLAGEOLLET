@@ -45,29 +45,27 @@ export default {
     }
   },
   methods: {
-    async waitForOpponentMove() {
+    async waitForOpponentMove(isFirstPlayerPlaying, row, col) {
       if (this.game.state === 2) {
         return;
       }
       let params = this.$route.params;
       let id = parseInt(params.id);
+
       let response = await axiosInstance.get(`/api/game/${id}`, {
         params: {
           since: this.game.last_time_updated
         }
       });
 
-      /* Si un changement est détecté par la méthode waitForOpponentMove, la grille s’actualisera
-      automatiquement pour faire apparaître le coup joué par votre adversaire. */
-      if (response.data.last_time_updated !== this.game.last_time_updated) {
-        
-        this.game = response.data;
+     if (isFirstPlayerPlaying) {
 
-      }
+
+     }
 
       this.game = response.data;
       if (this.game.state !== 2) {
-        await this.waitForOpponentMove();
+        setTimeout (await this.waitForOpponentMove, 5000);
       }
       else if (this.game.state === 2) {
         alert("La partie est terminée");
@@ -77,6 +75,28 @@ export default {
       let params = this.$route.params;
       let id = params.id;
       axiosInstance.patch(`/api/games/${id}/play/${row}/${col}`).then(response => {
+        /* Si un changement est détecté par la méthode waitForOpponentMove, la grille s’actualisera
+     automatiquement pour faire apparaître le coup joué par votre adversaire. */
+        if (response.data.next_player_id ===! this.game.owner.id)
+        {
+          Document.querySelector('section:nth-child(1)').innerHTML = "X";
+          case row, col:
+            1,1:
+              Document.querySelector('section:nth-child(1)').innerHTML = "X";
+            1,2: Document.querySelector('section:nth-child(2)').innerHTML = "X";
+            1,3: Document.querySelector('section:nth-child(3)').innerHTML = "X";
+            2,1: Document.querySelector('section:nth-child(4)').innerHTML = "X";
+            2,2: Document.querySelector('section:nth-child(5)').innerHTML = "X";
+            2,3: Document.querySelector('section:nth-child(6)').innerHTML = "X";
+            3,1: Document.querySelector('section:nth-child(7)').innerHTML = "X";
+            3,2: Document.querySelector('section:nth-child(8)').innerHTML = "X";
+            3,3: Document.querySelector('section:nth-child(9)').innerHTML = "X";
+          break;
+          // this.waitForOpponentMove(true, row, col);
+        }
+        else {
+
+        }
         console.log('okay, lets go!');
       }).catch(error => {
         console.log("La cellule cible a déjà été jouée");

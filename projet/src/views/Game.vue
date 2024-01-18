@@ -6,15 +6,15 @@
   </header>
 
     <div class="morpion">
-      <section @click="play"> </section>
-      <section @click="play">  </section>
-      <section @click="play">  </section>
-      <section @click="play">  </section>
-      <section @click="play">  </section>
-      <section @click="play">  </section>
-      <section @click="play">  </section>
-      <section @click="play">  </section>
-      <section @click="play">  </section>
+      <section @click="play(1,1)"></section>
+      <section @click="play(1,2)"></section>
+      <section @click="play(1,3)"></section>
+      <section @click="play(2,1)"></section>
+      <section @click="play(2,2)"></section>
+      <section @click="play(2,3)"></section>
+      <section @click="play(3,1)"></section>
+      <section @click="play(3,2)"></section>
+      <section @click="play(3,3)"></section>
     </div>
 
    <footer>
@@ -59,10 +59,10 @@ export default {
         await this.waitForOpponentMove();
       }
     },
-    play() {
+    play(row, col) {
       let params = this.$route.params;
       let id = params.id;
-      axiosInstance.patch(`/api/games/${id}/play/1/1`).then(response => {
+      axiosInstance.patch(`/api/games/${id}/play/${row}/${col}`).then(response => {
         console.log(response.data);
       }).catch(error => {
         console.log(error.response.data.errors);
@@ -81,7 +81,6 @@ export default {
     });
 
   }
-
 }
 </script>
 

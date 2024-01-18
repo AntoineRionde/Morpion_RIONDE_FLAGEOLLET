@@ -16,6 +16,7 @@ export default {
   methods: {
     joinGame() {
       axiosInstance.patch(`/api/games/${this.code}/join`).then(response => {
+        console.log(response.data);
          let id = response.data.id;
          this.$router.push({ path: `/games/${id}` });
         console.log(response);

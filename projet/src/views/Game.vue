@@ -29,7 +29,10 @@ export default {
   name: "GameVue",
   data() {
     return {
-      game: {owner: {}}
+      game: {owner: {}},
+      symbols: {
+        0: "X",
+        1: "O"}
     };
   },
   computed: {
@@ -54,9 +57,20 @@ export default {
         }
       });
 
+      /* Si un changement est détecté par la méthode waitForOpponentMove, la grille s’actualisera
+      automatiquement pour faire apparaître le coup joué par votre adversaire. */
+      if (response.data.last_time_updated !== this.game.last_time_updated) {
+        
+        this.game = response.data;
+
+      }
+
       this.game = response.data;
       if (this.game.state !== 2) {
         await this.waitForOpponentMove();
+      }
+      else if (this.game.state === 2) {
+        alert("La partie est terminée");
       }
     },
     play(row, col) {
@@ -65,6 +79,7 @@ export default {
       axiosInstance.patch(`/api/games/${id}/play/${row}/${col}`).then(response => {
         console.log('okay, lets go!');
       }).catch(error => {
+        console.log("La cellule cible a déjà été jouée");
         console.log(error.response.data.errors);
       });
     }

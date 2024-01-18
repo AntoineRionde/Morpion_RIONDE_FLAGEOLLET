@@ -63,7 +63,7 @@ export default {
       let params = this.$route.params;
       let id = params.id;
       axiosInstance.patch(`/api/games/${id}/play/${row}/${col}`).then(response => {
-        console.log(response.data);
+        console.log('okay, lets go!');
       }).catch(error => {
         console.log(error.response.data.errors);
       });
@@ -105,7 +105,12 @@ section {
   width: 100%;
 }
 
-section {
-  border: 1px solid #ccc;
+section:nth-child(1), section:nth-child(2), section:nth-child(4), section:nth-child(5), section:nth-child(7), section:nth-child(8) {
+  border-right:  2px solid #ccc;
 }
+
+section:nth-child(1), section:nth-child(2), section:nth-child(3), section:nth-child(4), section:nth-child(5), section:nth-child(6) {
+  border-bottom:  2px solid #ccc;
+}
+
 </style>

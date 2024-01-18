@@ -95,6 +95,8 @@ input {
 }
 
 .save-button {
+  padding: 10px;
+  width: 100%;
   background-color: #007BFF;
   color: #fff;
   border: none;

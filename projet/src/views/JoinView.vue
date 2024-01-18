@@ -1,12 +1,16 @@
 <template>
   <div class="join-view">
     <div class="form-container">
-      <h1>Rejoindre une partie</h1>
-      <label for="code">Code de la partie :</label>
-      <input type="text" name="code" required v-model="code" />
-      <button class="join-button" @click="joinGame">Rejoindre</button>
+      <form @submit.prevent="joinGame" class="join-form">
+        <h1>Rejoindre une partie</h1>
+        <input placeholder="Code de la partie" type="text" name="code" required v-model="code" />
+        <div class="error-message" v-if="error">Veuillez remplir le champ du code de la partie.</div>
+        <div class="buttons-container">
+          <button type="submit" class="join-button">Rejoindre</button>
+        </div>
+        <router-link to="/" class="back-button">Revenir à l'accueil</router-link>
+      </form>
     </div>
-    <button class="back-button"><router-link to="/">Revenir à l'accueil</router-link></button>
   </div>
 </template>
 
@@ -17,11 +21,17 @@ export default {
   name: "JoinView",
   data() {
     return {
-      code: ""
+      code: "",
+      error: false
     };
   },
   methods: {
     joinGame() {
+      if (this.code.trim() === "") {
+        this.error = true;
+        return;
+      }
+
       axiosInstance.patch(`/api/games/${this.code}/join`)
           .then(response => {
             console.log(response.data);
@@ -36,7 +46,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .join-view {
   display: flex;
@@ -62,6 +71,11 @@ h1 {
   margin-bottom: 20px;
 }
 
+.join-form {
+  display: flex;
+  flex-direction: column;
+}
+
 label {
   display: block;
   font-size: 18px;
@@ -77,9 +91,15 @@ input {
   box-sizing: border-box;
 }
 
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .join-button {
   padding: 12px;
   font-size: 18px;
+  margin-bottom: 15px;
   background-color: #007BFF;
   color: #fff;
   border: none;
@@ -106,5 +126,10 @@ input {
 .back-button:hover {
   background-color: #007BFF;
   color: #fff;
+}
+
+.error-message {
+  color: #ff0000;
+  margin-bottom: 10px;
 }
 </style>

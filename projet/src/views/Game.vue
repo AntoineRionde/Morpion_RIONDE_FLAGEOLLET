@@ -111,11 +111,12 @@ export default {
       let id = params.id;
       axiosInstance.patch(`/api/games/${id}/play/${row}/${col}`).then(response => {
         this.game = response.data;
-
-        if (this.waitForOpponentMove()) {
-            console.log(this.game);
+        this.waitForOpponentMove();
+          if (this.game.opponent.id === this.game.next_player_id) {
+            this.makeGrid(1, row, col);
+          } else if (this.game.owner.id === this.game.next_player_id) {
             this.makeGrid(0, row, col);
-        }
+          }
       }).catch(error => {
         console.log("La cellule cible a déjà été jouée");
         console.log(error.response.data.errors);
@@ -158,6 +159,10 @@ footer {
 section {
   height: 200px;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 200px;
 }
 
 section:nth-child(1), section:nth-child(2), section:nth-child(4), section:nth-child(5), section:nth-child(7), section:nth-child(8) {

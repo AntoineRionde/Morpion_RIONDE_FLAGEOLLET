@@ -1,7 +1,7 @@
 <template>
   <header>
     <textarea v-model="game.owner.name"></textarea>
-    <textarea v-if="opponent" v-model="opponent.name"> </textarea>
+    <textarea v-if="opponent" v-model="opponent.name"></textarea>
     <textarea v-model="game.code"></textarea>
   </header>
 
@@ -31,6 +31,7 @@
 
 <script>
 import axiosInstance from "../api";
+import {isNull} from "eslint-plugin-vue/lib/utils/ts-utils/typescript.js";
 export default {
   name: "GameVue",
   data() {
@@ -83,7 +84,7 @@ export default {
           break;
       }
     },
-    async waitForOpponentMove(row, col) {
+    async waitForOpponentMove() {
       if (this.game.state === 2) {
         return;
       }
@@ -96,13 +97,8 @@ export default {
         }
       });
 
-      if (response.data.next_player_id === this.game.owner_id) {
-        this.makeGrid(0, row, col);
-      } else {
-        this.makeGrid(1, row, col);
-      }
 
-      // this.game = response.data;
+      this.game = response.data;
       if (this.game.state !== 2) {
         setTimeout (await this.waitForOpponentMove, 5000);
       }
@@ -115,8 +111,11 @@ export default {
       let id = params.id;
       axiosInstance.patch(`/api/games/${id}/play/${row}/${col}`).then(response => {
         this.game = response.data;
-        this.waitForOpponentMove(row, col);
-        console.log('okay, lets go!');
+
+        if (this.waitForOpponentMove()) {
+            console.log(this.game);
+            this.makeGrid(0, row, col);
+        }
       }).catch(error => {
         console.log("La cellule cible a déjà été jouée");
         console.log(error.response.data.errors);
@@ -131,7 +130,6 @@ export default {
         vm.game.opponent = response.data.opponent;
         vm.game.state = response.data.state;
         vm.game.last_time_updated = response.data.last_time_updated;
-        vm.game.winner.name = response.data.winner.name;
         vm.game.next_player_id = response.data.next_player_id;
         vm.game.owner_id = response.data.owner_id;
       });

@@ -103,6 +103,7 @@ export default {
       else if (this.game.state === 2) {
         alert("La partie est terminée");
       }
+      this.updateView(this.game);
     },
     updateView(game) {
       let view =  [game.r1c1, game.r1c2, game.r1c3, game.r2c1, game.r2c2, game.r2c3, game.r3c1, game.r3c2, game.r3c3];
@@ -148,7 +149,6 @@ export default {
         } else if (this.game.owner.id === this.game.next_player_id) {
           this.makeGrid(0, row, col);
         }
-        this.updateView(this.game);
       }).catch(error => {
         console.log(error.response.data.errors);
       });

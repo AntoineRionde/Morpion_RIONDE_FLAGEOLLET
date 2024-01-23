@@ -89,16 +89,14 @@ export default {
         return;
       }
       let params = this.$route.params;
-      let id = parseInt(params.id);
-
-      let response = await axiosInstance.get(`/api/game/${id}`, {
+      let id = params.id;
+      let response = await axiosInstance.get(`/api/games/${id}`, {
         params: {
           since: this.game.last_time_updated
         }
       });
-
-
       this.game = response.data;
+      console.log(this.game);
       if (this.game.state !== 2) {
         setTimeout(() => this.waitForOpponentMove(), 5000);
       }
@@ -108,11 +106,11 @@ export default {
     },
     updateView(game) {
       let view =  [game.r1c1, game.r1c2, game.r1c3, game.r2c1, game.r2c2, game.r2c3, game.r3c1, game.r3c2, game.r3c3];
-      let userSymbol = 0;
       let col = 0;
       let row = 0;
       for (let i = 0; i < view.length; i++) {
         if (view[i] === 1) {
+          let userSymbol = 1;
           if(i<3){
             row = 1;
             col = i+1;
@@ -125,7 +123,7 @@ export default {
           }
           this.makeGrid(userSymbol,row,col);
         } else if (view[i] === 2) {
-          userSymbol = 1;
+          let userSymbol = 0;
           if(i<3){
             row = 1;
             col = i+1;
@@ -145,7 +143,6 @@ export default {
       let id = params.id;
       axiosInstance.patch(`/api/games/${id}/play/${row}/${col}`).then(response => {
         this.game = response.data;
-        this.waitForOpponentMove();
         if (this.game.opponent.id === this.game.next_player_id) {
           this.makeGrid(1, row, col);
         } else if (this.game.owner.id === this.game.next_player_id) {
@@ -160,13 +157,8 @@ export default {
   beforeRouteEnter(to, from, next) {
     axiosInstance.get(`/api/games/${to.params.id}`).then(response => {
       next(vm => {
-        vm.game.owner.name = response.data.owner.name;
-        vm.game.code = response.data.code;
-        vm.game.opponent = response.data.opponent;
-        vm.game.state = response.data.state;
-        vm.game.last_time_updated = response.data.last_time_updated;
-        vm.game.next_player_id = response.data.next_player_id;
-        vm.game.owner_id = response.data.owner_id;
+        vm.game=response.data;
+        vm.waitForOpponentMove();
       });
     });
 

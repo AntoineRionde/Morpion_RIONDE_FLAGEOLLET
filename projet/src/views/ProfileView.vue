@@ -8,9 +8,7 @@
         <label for="email">Email</label>
         <input type="email" id="email" name="email" v-model="user.email" />
         <div class="buttons-container">
-          <router-link to="/">
             <button type="submit" class="save-button">Sauvegarder</button>
-          </router-link>
           <router-link to="/" class="back-button">Revenir à l'accueil</router-link>
         </div>
       </form>

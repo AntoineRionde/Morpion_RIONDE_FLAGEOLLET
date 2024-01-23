@@ -100,10 +100,22 @@ export default {
 
       this.game = response.data;
       if (this.game.state !== 2) {
-        setTimeout (await this.waitForOpponentMove, 5000);
+        setTimeout(() => this.waitForOpponentMove(), 5000);
       }
       else if (this.game.state === 2) {
         alert("La partie est terminée");
+      }
+    },
+    updateView(game) {
+      let view =  [game.r1c1, game.r1c2, game.r1c3, game.r2c1, game.r2c2, game.r2c3, game.r3c1, game.r3c2, game.r3c3];
+      let userSymbol = 0;
+      for (let i = 0; i < view.length; i++) {
+        if (view[i] === 1) {
+          this.makeGrid(userSymbol, i + 1);
+        } else if (view[i] === 2) {
+          userSymbol = 1;
+          this.makeGrid(userSymbol, i + 1);
+        }
       }
     },
     play(row, col) {
@@ -112,13 +124,13 @@ export default {
       axiosInstance.patch(`/api/games/${id}/play/${row}/${col}`).then(response => {
         this.game = response.data;
         this.waitForOpponentMove();
-          if (this.game.opponent.id === this.game.next_player_id) {
-            this.makeGrid(1, row, col);
-          } else if (this.game.owner.id === this.game.next_player_id) {
-            this.makeGrid(0, row, col);
-          }
+        if (this.game.opponent.id === this.game.next_player_id) {
+          this.makeGrid(1, row, col);
+        } else if (this.game.owner.id === this.game.next_player_id) {
+          this.makeGrid(0, row, col);
+        }
+        this.updateView(this.game);
       }).catch(error => {
-        console.log("La cellule cible a déjà été jouée");
         console.log(error.response.data.errors);
       });
     }

@@ -109,12 +109,34 @@ export default {
     updateView(game) {
       let view =  [game.r1c1, game.r1c2, game.r1c3, game.r2c1, game.r2c2, game.r2c3, game.r3c1, game.r3c2, game.r3c3];
       let userSymbol = 0;
+      let col = 0;
+      let row = 0;
       for (let i = 0; i < view.length; i++) {
         if (view[i] === 1) {
-          this.makeGrid(userSymbol, i + 1);
+          if(i<3){
+            row = 1;
+            col = i+1;
+          } else if (i<6){
+            row = 2;
+            col = i-2;
+          } else if (i<9){
+            row = 3;
+            col = i-5;
+          }
+          this.makeGrid(userSymbol,row,col);
         } else if (view[i] === 2) {
           userSymbol = 1;
-          this.makeGrid(userSymbol, i + 1);
+          if(i<3){
+            row = 1;
+            col = i+1;
+          } else if (i<6){
+            row = 2;
+            col = i-2;
+          } else if (i<9){
+            row = 3;
+            col = i-5;
+          }
+          this.makeGrid(userSymbol,row,col);
         }
       }
     },
